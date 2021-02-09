@@ -4,6 +4,7 @@ from preprocess import preproc_gray, preproc_lab, preproc_morphology
 from zipfile import ZipFile
 import numpy as np
 import gdown
+import os
 
 
 def download_model(id, name, path):
@@ -19,6 +20,9 @@ if __name__ == '__main__':
 
     data_paths = [x.strip() for x in data_paths]
 
+    pgen_gray = Generator(data_paths, data_paths, 32, 3, is_predicting=True, preprocess=preproc_gray)
+    pgen_lab = Generator(data_paths, data_paths, 32, 3, is_predicting=True, preprocess=preproc_lab)
+
     # https://drive.google.com/file/d/1-Q-HQ-tTU3A4jvgAuQD-KEP7Uu-3-cKs/view?usp=sharing # ResNet50_RGB_LAB_SPLIT.zip
     # https://drive.google.com/file/d/1-H8dsQZyyW3mfiVytR-x68CotuxEFaWB/view?usp=sharing # ResNet50_RGB_LAB_WHOLE.zip
     # https://drive.google.com/file/d/1FuQE7PfOcOK54fHm37-kYsIEetaqnZTN/view?usp=sharing # STN_CONV_GRAY_SPLIT.zip
@@ -28,16 +32,9 @@ if __name__ == '__main__':
     path = ''  # path to the saved model
 
     download_model(id, name, path)
-    download_model(id, name, path)
-    download_model(id, name, path)
+    model = keras.models.load_model(path)
 
-    ResNet50_RGB_LAB_SPLIT_model = keras.models.load_model(path)
-    ResNet50_RGB_LAB_WHOLE_model = keras.models.load_model(path)
-    STN_CONV_GRAY_SPLIT_model = keras.models.load_model(path)
-
-    pgen = Generator(data_paths, data_paths, 32, 3, is_predicting=True, preprocess=preproc_gray)
-
-    preds = model.predict(pgen)
+    preds = model.predict(pgen_gray)
 
     print(preds)
 
